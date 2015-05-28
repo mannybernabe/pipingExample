@@ -1,0 +1,73 @@
+---
+output:
+  html_document:
+    toc:           False
+    theme:         cerulean
+    highlight:     pygments
+   
+---
+
+### Nesting Versus Piping
+
+R is primarily a functional programing language, which leads to a lot of nesting:   `thenDoSomeThingElse(doSomethingFirst(data))`.   Notice that we start from within  with orginal data and then move out.  Even a moderate amount of nesting can make your code difficult to read, including for your future self.  That’s why I have been absolutely in enthralled with the new piping operator `%>%` from the  `magrittr` package and used heavily in the data manpulation package  `dplyr`. 
+
+The piping operator passes an object as the first agrument into the following function.  Going back our earlier example: `data %>% doSomethingFirst() %>% thenDoSomeThingElse()`. Piping allows code in a much more natural way, from left to right.
+
+### Piping Example With dplyr
+Lets go through a more expansive example using flight data 2013 New York City flight data.   Now, let’s say that we are interested in the following question: What airlines had the most flights headed for O’Hare Airport (ORD) on the first day of the month?
+
+We’ll answer this question using dplyr functions using traditional nesting and then using the piping operator.  Check out the full code on github. 
+
+First, let's take a peak at the data. 
+
+```{r,echo=FALSE, message=FALSE}
+
+library(dplyr);library(nycflights13)
+
+data(flights)
+
+``` 
+
+```{r,comment=NA}
+flights
+
+
+```
+
+Looks like a lot of good data.  Now let's answer our question using nesting.
+
+```{r,comment=NA}
+
+flightsToChicago_NESTING<-arrange(
+  summarize(
+    group_by(
+      filter(flights,dest=="ORD",day==1),carrier),numFlights=n()),desc(numFlights)
+  )
+
+flightsToChicago_NESTING
+
+
+```
+
+Alright, looks like United Airlines comes up on top.  We started by filtering the  `flights` data to observations where the destination`dest` is O'hare and the day of the month `day` is one, but that can be hard to miss because of all the nesting business going on.
+
+Now, let's consider piping. 
+
+```{r,comment=NA}
+
+
+flightsToChicago_PIPING<-flights%>%
+                            filter(dest=="ORD",day==1)%>%
+                            group_by(carrier)%>%
+                            summarise(numFlights=n())%>%
+                            arrange(desc(numFlights))
+
+flightsToChicago_PIPING
+
+
+```
+
+Boom! More readable code.  Bottomline: piping makes data analysis more enjoyable.
+
+
+
