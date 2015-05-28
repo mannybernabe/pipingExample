@@ -12,7 +12,10 @@ glimpse(flights)
 flightsToChicago_NESTING<-arrange(
   summarize(
     group_by(
-      filter(flights,dest=="ORD",day==1),carrier),numFlights=n()),desc(numFlights)
+      filter(flights,dest=="ORD",day==1),
+      carrier),
+    numFlights=n()),
+  desc(numFlights)
 )
 
 flightsToChicago_NESTING

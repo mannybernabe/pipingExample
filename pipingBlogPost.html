@@ -65,13 +65,14 @@ code > span.er { color: #ff0000; font-weight: bold; }
 
 <div id="nesting-versus-piping" class="section level3">
 <h3>Nesting Versus Piping</h3>
-<p>R is primarily a functional programing language, which leads to a lot of nesting: <code>thenDoSomeThingElse(doSomethingFirst(data))</code>. Notice that we start from within with orginal data and then move out. Even a moderate amount of nesting can make your code difficult to read, including for your future self. That’s why I have been absolutely in enthralled with the new piping operator <code>%&gt;%</code> from the <code>magrittr</code> package and used heavily in the data manpulation package <code>dplyr</code>.</p>
-<p>The piping operator passes an object as the first agrument into the following function. Going back our earlier example: <code>data %&gt;% doSomethingFirst() %&gt;% thenDoSomeThingElse()</code>. Piping allows code in a much more natural way, from left to right.</p>
+<p>R is primarily a functional programing language, which leads to a lot of nesting: <code>thenDoSomethingElse(doSomethingFirst(data))</code>. Notice that we start from within with the original data and then move out. Even a moderate amount of nesting can make your code difficult to read, including for your future self! That’s why I’ve been absolutely enthralled with the new piping operator <code>%&gt;%</code> from the <code>magrittr</code> package. The operator works well in concert with Hadley Wickham’s excellent new data wrangling package <code>dplyr</code>.</p>
+<p>The piping operator passes an object as the first argument into the following function. Going back our earlier example: <code>data %&gt;% doSomethingFirst() %&gt;% thenDoSomeThingElse()</code>. You might think of the operator as equivanant to “then do this”. Piping allows code to be read more naturally from left to right.</p>
+<p></br></p>
 </div>
 <div id="piping-example-with-dplyr" class="section level3">
-<h3>Piping Example With dplyr</h3>
-<p>Lets go through a more expansive example using flight data 2013 New York City flight data. Now, let’s say that we are interested in the following question: What airlines had the most flights headed for O’Hare Airport (ORD) on the first day of the month?</p>
-<p>We’ll answer this question using dplyr functions using traditional nesting and then using the piping operator. Check out the full code on github.</p>
+<h3>Piping Example with dplyr</h3>
+<p>Lets go through a more expansive example using 2013 New York City flight data. Now, let’s say that we are interested in the following question: <strong>What airlines had the most flights headed for O’Hare Airport (ORD) on the first day of the month?</strong></p>
+<p>We’ll answer this question using dplyr functions first using traditional nesting and then using the piping operator. Check out the full code on <a href="https://github.com/mannybernabe/pipingExample">github</a>.</p>
 <p>First, let’s take a peak at the data.</p>
 <pre class="sourceCode r"><code class="sourceCode r">flights</code></pre>
 <pre><code>Source: local data frame [336,776 x 16]
@@ -94,8 +95,11 @@ Variables not shown: flight (int), origin (chr), dest (chr), air_time
 <pre class="sourceCode r"><code class="sourceCode r">flightsToChicago_NESTING&lt;-<span class="kw">arrange</span>(
   <span class="kw">summarize</span>(
     <span class="kw">group_by</span>(
-      <span class="kw">filter</span>(flights,dest==<span class="st">&quot;ORD&quot;</span>,day==<span class="dv">1</span>),carrier),<span class="dt">numFlights=</span><span class="kw">n</span>()),<span class="kw">desc</span>(numFlights)
-  )
+      <span class="kw">filter</span>(flights,dest==<span class="st">&quot;ORD&quot;</span>,day==<span class="dv">1</span>),
+      carrier),
+    <span class="dt">numFlights=</span><span class="kw">n</span>()),
+  <span class="kw">desc</span>(numFlights)
+)
 
 flightsToChicago_NESTING</code></pre>
 <pre><code>Source: local data frame [5 x 2]
@@ -106,7 +110,7 @@ flightsToChicago_NESTING</code></pre>
 3      MQ         77
 4      9E         35
 5      B6         30</code></pre>
-<p>Alright, looks like United Airlines comes up on top. We started by filtering the <code>flights</code> data to observations where the destination<code>dest</code> is O’hare and the day of the month <code>day</code> is one, but that can be hard to miss because of all the nesting business going on.</p>
+<p>Alright, looks like United Airlines comes up on top. We started by filtering the <code>flights</code> data to observations where the destination(<code>dest</code>) equals O’hare and the day of the month (<code>day</code>) equals one, but that can be hard to miss with all the nesting business going on.</p>
 <p>Now, let’s consider piping.</p>
 <pre class="sourceCode r"><code class="sourceCode r">flightsToChicago_PIPING&lt;-flights%&gt;%
 <span class="st">                            </span><span class="kw">filter</span>(dest==<span class="st">&quot;ORD&quot;</span>,day==<span class="dv">1</span>)%&gt;%
